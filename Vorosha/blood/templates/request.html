@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .request-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-header {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .blood-group-icon {
+        font-size: 1.2rem;
+        margin-right: 8px;
+    }
+    
+    .request-history {
+        margin-top: 3rem;
+        border-top: 1px solid #dee2e6;
+        padding-top: 2rem;
+    }
+    
+    .request-item {
+        transition: all 0.2s;
+        border-left: 4px solid transparent;
+    }
+    
+    .request-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    
+    /* Urgency level colors */
+    .urgency-normal {
+        border-left-color: #28a745;
+    }
+    
+    .urgency-urgent {
+        border-left-color: #ffc107;
+    }
+    
+    .urgency-critical {
+        border-left-color: #dc3545;
+    }
+    
+    /* Blood group specific colors */
+    .blood-group-A { color: #6f42c1; }
+    .blood-group-B { color: #fd7e14; }
+    .blood-group-AB { color: #20c997; }
+    .blood-group-O { color: #dc3545; }
+    .blood-group-pos { font-weight: bold; }
+    .blood-group-neg { opacity: 0.9; }
+    
+    /* New styles for enhanced request history */
+    .request-history .dropdown-toggle::after {
+        display: none;
+    }
+    .request-history .badge i {
+        font-size: 0.8em;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Request Form Section -->
+            <div class="request-container p-4 p-md-5 mb-5">
+                <div class="form-header">
+                    <h2 class="text-center mb-3"><i class="fas fa-hand-holding-medical text-danger me-2"></i>Blood Donation Request</h2>
+                    <p class="text-center text-muted">Fill out this form to request blood donations from potential donors</p>
+                </div>
+                
+                <form method="POST" action="{% url 'create_request' %}">
+                    {% csrf_token %}
+                    
+                    <div class="row g-3">
+                        <!-- Blood Group -->
+                        <div class="col-md-6">
+                            <label for="id_blood_group" class="form-label">
+                                <i class="fas fa-tint blood-group-O me-2"></i>Blood Group Needed
+                            </label>
+                            {{ form.blood_group }}
+                        </div>
+                        
+                        <!-- Urgency Level -->
+                        <div class="col-md-6">
+                            <label for="id_urgency" class="form-label">
+                                <i class="fas fa-exclamation-circle me-2"></i>Urgency Level
+                            </label>
+                            {{ form.urgency }}
+                        </div>
+                        
+                        <!-- Patient Type -->
+                        <div class="col-md-6">
+                            <label for="id_patient_type" class="form-label">
+                                <i class="fas fa-user-injured me-2"></i>Patient Type
+                            </label>
+                            {{ form.patient_type }}
+                        </div>
+                        
+                        <!-- Contact Number -->
+                        <div class="col-md-6">
+                            <label for="id_contact_number" class="form-label">
+                                <i class="fas fa-phone me-2"></i>Contact Number
+                            </label>
+                            {{ form.contact_number }}
+                        </div>
+                        
+                        <!-- Hospital Information -->
+                        <div class="col-12">
+                            <label for="id_hospital_name" class="form-label">
+                                <i class="fas fa-hospital me-2"></i>Hospital Name
+                            </label>
+                            {{ form.hospital_name }}
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="id_hospital_address" class="form-label">
+                                <i class="fas fa-map-marker-alt me-2"></i>Hospital Address
+                            </label>
+                            {{ form.hospital_address }}
+                        </div>
+                        
+                        <!-- Additional Notes -->
+                        <div class="col-12">
+                            <label for="id_additional_notes" class="form-label">
+                                <i class="fas fa-notes-medical me-2"></i>Additional Notes
+                            </label>
+                            {{ form.additional_notes }}
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-danger w-100 py-3">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Request
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Previous Requests Section - Enhanced Version -->
+            <div class="request-history">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="mb-0">
+                        <i class="fas fa-history me-2 text-primary"></i>Your Previous Requests
+                    </h4>
+                    <small class="text-muted">{{ requests.count }} total requests</small>
+                </div>
+                
+                {% if requests %}
+                <div class="list-group mt-3">
+                    {% for req in requests %}
+                    <div class="list-group-item request-item mb-3 urgency-{{ req.urgency|lower }} rounded-3">
+                        <div class="d-flex w-100 justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-tint blood-group-{{ req.blood_group|first }} me-2 fs-5"></i>
+                                    <h5 class="mb-0 d-flex align-items-center">
+                                        <span class="blood-group-{{ req.blood_group|first }} blood-group-{% if req.blood_group|last == '+' %}pos{% else %}neg{% endif %} me-2">
+                                            {{ req.get_blood_group_display }}
+                                        </span>
+                                        <span class="badge bg-{% if req.is_fulfilled %}success{% else %}warning text-dark{% endif %}">
+                                            {% if req.is_fulfilled %}
+                                            <i class="fas fa-check-circle me-1"></i> Fulfilled
+                                            {% else %}
+                                            <i class="fas fa-hourglass-half me-1"></i> Pending
+                                            {% endif %}
+                                        </span>
+                                    </h5>
+                                </div>
+                                
+                                <div class="d-flex flex-wrap align-items-center text-muted mb-2">
+                                    <span class="me-3">
+                                        <i class="fas fa-hospital me-1"></i>
+                                        <strong>{{ req.hospital_name|truncatechars:30 }}</strong>
+                                    </span>
+                                    <span class="me-3">
+                                        <i class="fas fa-user-injured me-1"></i>
+                                        {{ req.get_patient_type_display }}
+                                    </span>
+                                </div>
+                                
+                                <div class="d-flex flex-wrap align-items-center">
+                                    <span class="badge bg-{% if req.urgency == 'Critical' %}danger{% elif req.urgency == 'Urgent' %}warning text-dark{% else %}success{% endif %} me-2 mb-1">
+                                        <i class="fas fa-{% if req.urgency == 'Critical' %}heartbeat{% else %}clock{% endif %} me-1"></i>
+                                        {{ req.get_urgency_display }}
+                                    </span>
+                                    <small class="text-muted me-3 mb-1">
+                                        <i class="fas fa-calendar-day me-1"></i>
+                                        {{ req.created_at|date:"M d, Y" }}
+                                    </small>
+                                    <small class="text-muted mb-1">
+                                        <i class="fas fa-clock me-1"></i>
+                                        {{ req.created_at|timesince }} ago
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="dropdown ms-3">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" 
+                                        id="requestDropdown{{ forloop.counter }}" data-bs-toggle="dropdown" 
+                                        aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="requestDropdown{{ forloop.counter }}">
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <i class="fas fa-eye me-2"></i>View Details
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <i class="fas fa-share-alt me-2"></i>Share
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="#">
+                                            <i class="fas fa-trash-alt me-2"></i>Delete
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        {% if req.additional_notes %}
+                        <div class="mt-3 pt-2 border-top">
+                            <small class="text-muted">Notes:</small>
+                            <p class="mb-0">{{ req.additional_notes|truncatechars:120 }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <small class="text-muted">
+                        Showing {{ requests.count }} request{{ requests.count|pluralize }}
+                    </small>
+                    <button class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-history me-1"></i> View All Requests
+                    </button>
+                </div>
+                {% else %}
+                <div class="alert alert-info mt-3">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-info-circle me-3 fs-4"></i>
+                        <div>
+                            <h5 class="alert-heading mb-1">No requests found</h5>
+                            <p class="mb-0">Your blood donation requests will appear here once submitted.</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Form Interaction Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Blood group select styling
+    const bloodGroupSelect = document.getElementById('id_blood_group');
+    if (bloodGroupSelect) {
+        bloodGroupSelect.addEventListener('change', function() {
+            this.classList.remove('blood-group-A', 'blood-group-B', 'blood-group-AB', 'blood-group-O');
+            if (this.value) {
+                this.classList.add(`blood-group-${this.value.charAt(0)}`);
+            }
+        });
+    }
+    
+    // Urgency select styling
+    const urgencySelect = document.getElementById('id_urgency');
+    if (urgencySelect) {
+        urgencySelect.addEventListener('change', function() {
+            this.classList.remove('urgency-normal', 'urgency-urgent', 'urgency-critical');
+            if (this.value) {
+                this.classList.add(`urgency-${this.value.toLowerCase()}`);
+            }
+        });
+    }
+    
+    // Initialize current values
+    if (bloodGroupSelect && bloodGroupSelect.value) {
+        bloodGroupSelect.classList.add(`blood-group-${bloodGroupSelect.value.charAt(0)}`);
+    }
+    if (urgencySelect && urgencySelect.value) {
+        urgencySelect.classList.add(`urgency-${urgencySelect.value.toLowerCase()}`);
+    }
+});
+</script>
+
+{% endblock %}
