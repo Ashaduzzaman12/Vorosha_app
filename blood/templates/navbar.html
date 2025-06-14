@@ -1,0 +1,63 @@
+{% load static %}
+
+<nav class="navbar d-flex navbar-expand-lg" style="background-color:rgba(93, 93, 93, 0.4); color: black;">
+    <div class="container">
+        <a style="font-family: 'Pacifico', cursive; font-size: 2rem; font-weight: bold; font-style: italic; display: flex; align-items: center; color: #001f54; text-decoration: none;"
+            href="#">
+            <i class="fas fa-heartbeat me-2" style="color: #001f54; font-size: 1.5rem;"></i>
+            <span>ভরসা</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'home' %}"><i
+                            class="fas fa-home me-1"></i> Home</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'about' %}"><i
+                            class="fas fa-info-circle me-1"></i> About</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'create_request' %}"><i
+                            class="fas fa-hand-holding-medical me-1"></i> Request</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'donor_responses' %}">
+                        <i class="fas fa-heart me-1"></i> Donate
+                    </a>
+                </li>
+
+                {% if user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
+                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% if user.profile.image %}
+                        <img src="{{ user.profile.image.url }}" class="rounded-circle me-2" width="30" height="30"
+                            alt="Profile">
+                        {% else %}
+                        <i class="fas fa-user-circle me-2" style="font-size: 1.2rem;"></i>
+                        {% endif %}
+                        <span>{{ user.username }}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="{% url 'profile' %}"><i
+                                    class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}"><i
+                                    class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </li>
+                {% else %}
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'login' %}"><i
+                            class="fas fa-sign-in-alt me-1"></i> Login</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Add this in your base.html head section -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">

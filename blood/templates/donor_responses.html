@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .request-container {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    .request-header {
+        color: #2c3e50;
+        border-bottom: 2px solid #dee2e6;
+        padding-bottom: 15px;
+    }
+    .response-btn {
+        transition: all 0.3s;
+    }
+    .request-card {
+        transition: all 0.2s;
+        border-left: 4px solid;
+    }
+    .request-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    .blood-A { border-left-color: #6f42c1; }
+    .blood-B { border-left-color: #fd7e14; }
+    .blood-AB { border-left-color: #20c997; }
+    .blood-O { border-left-color: #dc3545; }
+    .urgency-normal { background-color: #f8f9fa; }
+    .urgency-urgent { background-color: #fff3cd; }
+    .urgency-critical { background-color: #f8d7da; }
+    .badge-urgent {
+        background-color: #ffc107;
+        color: #212529;
+    }
+    .badge-critical {
+        background-color: #dc3545;
+        color: white;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Active Requests Section -->
+            <div class="request-container p-4 mb-5">
+                <div class="request-header mb-4">
+                    <h2 class="text-center"><i class="fas fa-hand-holding-heart me-2"></i>Available Blood Requests</h2>
+                    <p class="text-muted text-center">Respond to these urgent blood needs</p>
+                </div>
+
+                {% if active_requests %}
+                <div class="list-group">
+                    {% for req in active_requests %}
+                    <div class="list-group-item request-card mb-3 urgency-{{req.urgency|lower}} blood-{{req.blood_group|slice:':1'}}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <h4 class="mb-0 me-2">
+                                        <span class="badge bg-danger me-2">{{ req.get_blood_group_display }}</span>
+                                        {{ req.hospital_name }}
+                                    </h4>
+                                    <span class="badge badge-{{req.urgency|lower}}">
+                                        {{ req.get_urgency_display }}
+                                    </span>
+                                </div>
+                                <p class="mb-1">
+                                    <i class="fas fa-user-injured me-1"></i> {{ req.get_patient_type_display }}
+                                    <span class="mx-2">•</span>
+                                    <i class="fas fa-map-marker-alt me-1"></i> {{ req.hospital_address }}
+                                </p>
+                                <small class="text-muted">
+                                    <i class="fas fa-clock me-1"></i> Posted {{ req.created_at|timesince }} ago
+                                </small>
+                            </div>
+                            <button class="btn btn-danger response-btn" data-bs-toggle="modal" data-bs-target="#responseModal{{req.id}}">
+                                <i class="fas fa-heartbeat me-1"></i> Respond
+                            </button>
+                        </div>
+
+                        {% if req.additional_notes %}
+                        <div class="mt-3 p-3 bg-light rounded">
+                            <h6><i class="fas fa-info-circle me-1"></i> Additional Notes:</h6>
+                            <p class="mb-0">{{ req.additional_notes }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Response Modal -->
+                    <div class="modal fade" id="responseModal{{req.id}}" tabindex="-1" aria-labelledby="responseModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header bg-danger text-white">
+                                    <h5 class="modal-title" id="responseModalLabel">
+                                        <i class="fas fa-heartbeat me-2"></i> Respond to Request
+                                    </h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form method="POST" action="{% url 'respond_to_request' req.id %}">
+                                    {% csrf_token %}
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <p>You're responding to a request for <strong>{{ req.get_blood_group_display }}</strong> blood at <strong>{{ req.hospital_name }}</strong>.</p>
+                                            <p>Patient type: {{ req.get_patient_type_display }}</p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="message{{req.id}}" class="form-label">Your Message (Optional)</label>
+                                            <textarea class="form-control" id="message{{req.id}}" name="message" rows="3" placeholder="Add any additional information or questions"></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Your Contact Information</label>
+                                            <input type="text" class="form-control" value="{{ request.user.email }}" readonly>
+                                            <small class="text-muted">The requester will contact you using this information</small>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fas fa-paper-plane me-1"></i> Send Response
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> There are currently no active blood requests. Please check back later.
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Your Responses Section -->
+            <div class="request-container p-4">
+                <div class="request-header mb-4">
+                    <h2 class="text-center"><i class="fas fa-history me-2"></i>Your Responses</h2>
+                    <p class="text-muted text-center">Requests you've responded to</p>
+                </div>
+
+                {% if your_responses %}
+                <div class="list-group">
+                    {% for response in your_responses %}
+                    <div class="list-group-item mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="mb-1">
+                                    <span class="badge bg-{% if response.request.is_fulfilled %}success{% else %}warning{% endif %} me-2">
+                                        {% if response.request.is_fulfilled %}Fulfilled{% else %}Pending{% endif %}
+                                    </span>
+                                    {{ response.request.get_blood_group_display }} for {{ response.request.get_patient_type_display }}
+                                </h5>
+                                <p class="mb-1">
+                                    <i class="fas fa-hospital me-1"></i> {{ response.request.hospital_name }}
+                                    <span class="mx-2">•</span>
+                                    <i class="fas fa-clock me-1"></i> Responded {{ response.response_date|timesince }} ago
+                                </p>
+                                {% if response.message %}
+                                <div class="mt-2 p-2 bg-light rounded">
+                                    <p class="mb-0"><strong>Your note:</strong> {{ response.message }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <span class="badge bg-{{response.request.urgency|lower}}">
+                                {{ response.request.get_urgency_display }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> You haven't responded to any requests yet.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}

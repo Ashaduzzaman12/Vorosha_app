@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<body style="height: 100%; font-family: Arial, sans-serif;">
+
+    <!-- Header Section -->
+    <div style="text-align: center; padding: 2rem; background: linear-gradient(to right, rgba(2, 2, 3, 0.5), rgba(167, 208, 255, 0.5)); color: rgb(255, 255, 255);">
+        <h1 style="font-size: 3rem; font-weight: bold;">About Vorosha</h1>
+        <p style="margin-top: 1rem; font-size: 1.2rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+            Welcome to <strong>Vorosha</strong>, a platform built with a singular mission: to save lives by making blood donation seamless, efficient, and community-driven. 
+            Vorosha bridges the gap between donors, recipients, and organizations, fostering a network of hope and support.
+        </p>
+    </div>
+
+    <!-- Mission and Vision -->
+    <div style="padding: 2rem;">
+        <h2 style="text-align: center; font-size: 2rem; font-weight: bold; color: #2176ff;">Our Mission</h2>
+        <p style="margin-top: 1rem; font-size: 1.2rem; max-width: 800px; margin-left: auto; margin-right: auto; text-align: justify;">
+            At <strong>Vorosha</strong>, we are committed to addressing the critical challenge of timely blood availability. Our platform ensures that 
+            donors can quickly respond to urgent needs, healthcare organizations can manage blood stocks efficiently, and patients can access life-saving donations 
+            without unnecessary delays. We envision a world where no life is lost due to the lack of blood – and we work tirelessly every day to make this a reality.
+        </p>
+    </div>
+
+    <!-- Features Section -->
+    <div style="background-color: rgba(240, 248, 255, 0.5); padding: 2rem;">
+        <h2 style="text-align: center; font-size: 2rem; font-weight: bold; color: #2176ff;">What Makes Vorosha Unique</h2>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; margin-top: 2rem;">
+            <div style="background: white; color: #2176ff; border-radius: 10px; padding: 1.5rem; width: 300px; text-align: center; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+                <h3 style="font-size: 1.5rem;">Real-Time Blood Requests</h3>
+                <p style="font-size: 1rem;">Receive and respond to urgent blood requests from patients and organizations in real time.</p>
+            </div>
+            <div style="background: white; color: #2176ff; border-radius: 10px; padding: 1.5rem; width: 300px; text-align: center; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+                <h3 style="font-size: 1.5rem;">Donor Eligibility Tracking</h3>
+                <p style="font-size: 1rem;">Stay informed about your eligibility to donate and receive reminders for future opportunities.</p>
+            </div>
+            <div style="background: white; color: #2176ff; border-radius: 10px; padding: 1.5rem; width: 300px; text-align: center; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+                <h3 style="font-size: 1.5rem;">Forum-Based Chat System</h3>
+                <p style="font-size: 1rem;">Connect with other donors, recipients, and organizations in our secure community-driven forum.</p>
+            </div>
+            <div style="background: white; color: #2176ff; border-radius: 10px; padding: 1.5rem; width: 300px; text-align: center; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+                <h3 style="font-size: 1.5rem;">Organization Tools</h3>
+                <p style="font-size: 1rem;">Manage blood drives, track donor data, and coordinate logistics effortlessly with our organization dashboard.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Testimonials Section -->
+    <div style="padding: 2rem;">
+        <h2 style="text-align: center; font-size: 2rem; font-weight: bold; color: #2176ff;">Voices of Impact</h2>
+        <div style="margin-top: 2rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem;">
+            <blockquote style="background: linear-gradient(to right, rgba(190, 213, 255, 0.5), rgba(167, 208, 255, 0.5)); color: rgb(0, 0, 0); border-radius: 10px; padding: 1.5rem; width: 300px; text-align: justify;">
+                <p>"Vorosha made it so easy to find donors for my hospital. It's a lifesaving tool."</p>
+                <footer>- Dr. Sarah, Healthcare Partner</footer>
+            </blockquote>
+            <blockquote style="background: linear-gradient(to right, rgba(150, 183, 243, 0.5), rgba(167, 208, 255, 0.5)); color: rgb(0, 0, 0); border-radius: 10px; padding: 1.5rem; width: 300px; text-align: justify;">
+                <p>"I never thought donating blood could be this seamless. Vorosha connects you to people in need instantly."</p>
+                <footer>- Alex, Donor</footer>
+            </blockquote>
+            <blockquote style="background: linear-gradient(to right, rgba(195, 216, 255, 0.5), rgba(167, 208, 255, 0.5)); color: rgb(0, 0, 0); border-radius: 10px; padding: 1.5rem; width: 300px; text-align: justify;">
+                <p>"When my sister needed a transfusion, Vorosha was there to help us find a donor immediately."</p>
+                <footer>- Michael, Recipient</footer>
+            </blockquote>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div style="text-align: center; padding: 2rem; background-color: rgba(33, 118, 255, 0.5); color: rgb(255, 255, 255);">
+        <h2 style="font-size: 2rem; font-weight: bold;">Be a Hero Today</h2>
+        <p style="font-size: 1.2rem; max-width: 800px; margin: 1rem auto;">
+            Join the Vorosha community and make a difference in someone’s life. Whether you’re a donor, patient, or organization, your support can save lives.
+        </p>
+        <a href="/register" style="background: rgb(10, 10, 10); color: #2176ff; padding: 0.75rem 2rem; text-decoration: none; font-size: 1rem; font-weight: bold; border-radius: 5px;">Join Now</a>
+    </div>
+
+    <!-- Footer -->
+    <footer style="text-align: center; padding: 1rem; background-color: #f9f9f9; color: black;">
+        <p>&copy; 2024 Vorosha. All rights reserved. Together, we save lives.</p>
+    </footer>
+</body>
+{% endblock %}
+
